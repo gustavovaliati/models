@@ -22,14 +22,14 @@ from datasets import cifar10
 from datasets import flowers
 from datasets import imagenet
 from datasets import mnist
-from datasets import coal
+from datasets import coal70
 
 datasets_map = {
     'cifar10': cifar10,
     'flowers': flowers,
     'imagenet': imagenet,
     'mnist': mnist,
-    'coal' : coal
+    'coal70' : coal70
 }
 
 

@@ -15,7 +15,7 @@
 """Provides data for the coal dataset.
 
 The dataset scripts used to create the dataset can be found at:
-tensorflow/models/slim/datasets/download_and_convert_coal.py
+tensorflow/models/slim/datasets/convert_coal.py
 """
 
 from __future__ import absolute_import
@@ -29,9 +29,9 @@ from datasets import dataset_utils
 
 slim = tf.contrib.slim
 
-_FILE_PATTERN = 'coal_%s_*.tfrecord'
+_FILE_PATTERN = 'coal70_%s_*.tfrecord'
 
-SPLITS_TO_SIZES = {'train': 1960, 'validation': 840}
+SPLITS_TO_SIZES = {'train': 1960, 'test': 840}
 
 _NUM_CLASSES = 10
 

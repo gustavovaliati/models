@@ -30,8 +30,8 @@ $ python download_and_convert_data.py \
     --dataset_dir=/tmp/flowers
 
 $ python download_and_convert_data.py \
-    --dataset_name=coal \
-    --dataset_dir=/tmp/coal
+    --dataset_name=coal70 \
+    --dataset_dir=/tmp/coal70
 
 ```
 """
@@ -44,14 +44,14 @@ import tensorflow as tf
 from datasets import download_and_convert_cifar10
 from datasets import download_and_convert_flowers
 from datasets import download_and_convert_mnist
-from datasets import download_and_convert_coal
+from datasets import convert_coal
 
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string(
     'dataset_name',
     None,
-    'The name of the dataset to convert, one of "cifar10", "flowers", "mnist", "coal".')
+    'The name of the dataset to convert, one of "cifar10", "flowers", "mnist", "coal70".')
 
 tf.app.flags.DEFINE_string(
     'dataset_dir',
@@ -71,8 +71,8 @@ def main(_):
     download_and_convert_flowers.run(FLAGS.dataset_dir)
   elif FLAGS.dataset_name == 'mnist':
     download_and_convert_mnist.run(FLAGS.dataset_dir)
-  elif FLAGS.dataset_name == 'coal':
-    download_and_convert_coal.run(FLAGS.dataset_dir)
+  elif FLAGS.dataset_name == 'coal70':
+    convert_coal.run(FLAGS.dataset_dir)
   else:
     raise ValueError(
         'dataset_name [%s] was not recognized.' % FLAGS.dataset_name)

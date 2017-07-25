@@ -39,11 +39,6 @@ from datasets import dataset_utils
 # The URL where the Flowers data can be downloaded.
 # _DATA_URL = 'http://download.tensorflow.org/example_images/coal_photos.tgz'
 
-# The number of images in the validation set.
-_NUM_VALIDATION = 840
-
-# Seed for repeatability.
-_RANDOM_SEED = 0
 
 # The number of shards per dataset split.
 _NUM_SHARDS = 5
@@ -80,11 +75,11 @@ def _get_filenames_and_classes(dataset_dir):
     A list of image file paths, relative to `dataset_dir` and the list of
     subdirectories, representing class names.
   """
-  coal_root = os.path.join(dataset_dir, 'coal_photos')
+  # coal_root = os.path.join(dataset_dir, 'coal_photos')
   directories = []
   class_names = []
-  for filename in os.listdir(coal_root):
-    path = os.path.join(coal_root, filename)
+  for filename in os.listdir(dataset_dir):
+    path = os.path.join(dataset_dir, filename)
     if os.path.isdir(path):
       directories.append(path)
       class_names.append(filename)
@@ -99,7 +94,7 @@ def _get_filenames_and_classes(dataset_dir):
 
 
 def _get_dataset_filename(dataset_dir, split_name, shard_id):
-  output_filename = 'coal_%s_%05d-of-%05d.tfrecord' % (
+  output_filename = 'coal70_%s_%05d-of-%05d.tfrecord' % (
       split_name, shard_id, _NUM_SHARDS)
   return os.path.join(dataset_dir, output_filename)
 
@@ -114,7 +109,7 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir):
       (integers).
     dataset_dir: The directory where the converted datasets are stored.
   """
-  assert split_name in ['train', 'validation']
+  assert split_name in ['train', 'test']
 
   num_per_shard = int(math.ceil(len(filenames) / float(_NUM_SHARDS)))
 
@@ -149,19 +144,19 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir):
   sys.stdout.write('\n')
   sys.stdout.flush()
 
-
-def _clean_up_temporary_files(dataset_dir):
-  """Removes temporary files used to create the dataset.
-
-  Args:
-    dataset_dir: The directory where the temporary files are stored.
-  """
-  # filename = _DATA_URL.split('/')[-1]
-  # filepath = os.path.join(dataset_dir, filename)
-  # tf.gfile.Remove(filepath)
-
-  tmp_dir = os.path.join(dataset_dir, 'coal_photos')
-  tf.gfile.DeleteRecursively(tmp_dir)
+#
+# def _clean_up_temporary_files(dataset_dir):
+#   """Removes temporary files used to create the dataset.
+#
+#   Args:
+#     dataset_dir: The directory where the temporary files are stored.
+#   """
+#   # filename = _DATA_URL.split('/')[-1]
+#   # filepath = os.path.join(dataset_dir, filename)
+#   # tf.gfile.Remove(filepath)
+#
+#   # tmp_dir = os.path.join(dataset_dir, 'coal_photos')
+#   # tf.gfile.DeleteRecursively(tmp_dir)
 
 
 def _dataset_exists(dataset_dir):
@@ -188,24 +183,25 @@ def run(dataset_dir):
     return
 
   # dataset_utils.download_and_uncompress_tarball(_DATA_URL, dataset_dir)
-  photo_filenames, class_names = _get_filenames_and_classes(dataset_dir)
+  train_dataset_dir = os.path.join(dataset_dir, 'train')
+  test_dataset_dir = os.path.join(dataset_dir, 'test')
+
+  training_filenames, class_names = _get_filenames_and_classes(train_dataset_dir)
   class_names_to_ids = dict(zip(class_names, range(len(class_names))))
 
-  # Divide into train and test:
-  random.seed(_RANDOM_SEED)
-  random.shuffle(photo_filenames)
-  training_filenames = photo_filenames[_NUM_VALIDATION:]
-  validation_filenames = photo_filenames[:_NUM_VALIDATION]
+  testing_filenames, class_names = _get_filenames_and_classes(test_dataset_dir)
+
+
 
   # First, convert the training and validation sets.
   _convert_dataset('train', training_filenames, class_names_to_ids,
-                   dataset_dir)
-  _convert_dataset('validation', validation_filenames, class_names_to_ids,
-                   dataset_dir)
+                   train_dataset_dir)
+  _convert_dataset('test', testing_filenames, class_names_to_ids,
+                   test_dataset_dir)
 
   # Finally, write the labels file:
   labels_to_class_names = dict(zip(range(len(class_names)), class_names))
   dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
 
-  _clean_up_temporary_files(dataset_dir)
+  # _clean_up_temporary_files(dataset_dir)
   print('\nFinished converting the Coal dataset!')
